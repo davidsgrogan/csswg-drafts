@@ -1,4 +1,4 @@
-This document describes the accessibility of the proposed HTML elements `<menubar>`, `<menulist>`, and `<menuitem>`, along with attributes such as `checkable` and `defaultchecked`. (Note that the `command` and `commandfor` attributes are relatively new, but preexisting, HTML attributes). These elements and attributes are intended to provide native semantics that map directly to ARIA roles and states.
+This document describes a potential accessibility approach to the proposed HTML elements `<menubar>`, `<menulist>`, and `<menuitem>`, and attributes `checkable` and `defaultchecked`. (Note that the `command` and `commandfor` attributes are relatively new, but preexisting, HTML attributes). These elements and attributes are intended to provide native semantics that map to existing ARIA roles and states.
 
 # Rules
 
@@ -7,12 +7,15 @@ This document describes the accessibility of the proposed HTML elements `<menuba
 3. `MENUITEM` elements *usually* have role [`menuitem`](https://w3c.github.io/aria/#menuitem).
 4. `MENUITEM`s can have `menuitemradio` or `menuitemcheckbox` roles depending on the checkable attribute of a parent fieldset
     1. `menuitemradio` and `menuitemcheckbox` elements have the `checked` attribute if they are checked
-5. `menuitem`s and `button`s that are submenu invokers have `expanded=True` or `expanded=False` state but will NOT get an aria-details pointing to the popover -- https://github.com/openui/open-ui/issues/1297#issuecomment-3376865931
-8. `button`s and `menuitem`s that are  `menu` invokers [have `haspopup=menu`](https://github.com/openui/open-ui/issues/1297#issuecomment-3376865931)
+5. `menuitem`s and `button`s that are `menu` invokers have
+   1. have `expanded=True` or `expanded=False` state
+   2. will NOT get an `aria-details` pointing to the `menu`
+   3. have `haspopup=menu`
+   4. [past discussion of these points](https://github.com/openui/open-ui/issues/1297#issuecomment-3376865931)
 6. `menubar` and `menu` have `setSize`
 7. `menuitem` descendants of a `menubar` or `menu` have `setSize` and `posInSet`
-9. `menuitem`, `menuitemcheckbox`, `menuitemradio` are included in the accessibility tree even when they are disabled
-10. An invoked `menulist` implicitly derives its accessible name from its invoker. The browser computes this in the accessibility tree exactly like `aria-labelledby` (without adding actual DOM attributes) unless an explicit `aria-labelledby` already exists.
+8. `menuitem`, `menuitemcheckbox`, `menuitemradio` are included in the accessibility tree even when they are disabled
+9. An invoked `menulist` implicitly derives its accessible name from its invoker. The browser computes this in the accessibility tree exactly like `aria-labelledby` (*without* adding actual DOM attributes) unless an explicit `aria-labelledby` already exists.
 
 # Example 1 -- File menu
 
@@ -116,6 +119,10 @@ menu name="Open Menu" setSize=1
   menuitem name="Item 1" setSize=1 posInSet=1
 ```
 
- TODO:
-  * Ask open questions with what we have left, including my draft local CL
-  * Animated gif of Example 1?
+## Related Open Questions
+1. [How do we acheive soft disabling of menu items?](https://github.com/openui/open-ui/issues/1274)
+2. [What should the content model be and what exactly do we do when it is violated?](https://github.com/openui/open-ui/issues/1433)
+
+## Related links
+1. [open-ui menu explainer](https://open-ui.org/components/menu.explainer)
+2. [Minutes and slideshow from TPAC 2025 when Dom Farolino initially presented menu elements to ARIA](https://github.com/w3c/aria/issues/2658#issuecomment-3947872243)
