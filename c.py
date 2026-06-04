@@ -99,7 +99,9 @@ def get_formatted_ax_tree():
             return children
 
         # --- Helper: Format the node string ---
-        def format_node(node, indent=''):
+        def format_node(node, siblings=None, indent=''):
+            if siblings is None:
+                siblings = [node]
             props = []
             
             # A. Extract Core Properties (Including the new `details` relation)
@@ -124,6 +126,37 @@ def get_formatted_ax_tree():
                         if target_id:
                             props.append(f'details="{target_id}"')
             
+            # Compute setSize and posInSet for menuitems if not already provided
+            role_str = node.get('role', {}).get('value', 'unknown')
+            relevant_children = get_relevant_children(node)
+            
+            menu_item_roles = ['menuitem', 'menuitemcheckbox', 'menuitemradio']
+            
+            if role_str in menu_item_roles and not any(p.startswith('setSize=') for p in props):
+                menuitem_siblings = [s for s in siblings if s.get('role', {}).get('value') in menu_item_roles]
+                set_size = len(menuitem_siblings)
+                if set_size > 0:
+                    try:
+                        pos_in_set = menuitem_siblings.index(node) + 1
+                        props.append(f"setSize={set_size}")
+                        props.append(f"posInSet={pos_in_set}")
+                    except ValueError:
+                        pass
+            elif role_str in ['menubar', 'menu'] and not any(p.startswith('setSize=') for p in props):
+                def count_items(children):
+                    count = 0
+                    for c in children:
+                        r = c.get('role', {}).get('value')
+                        if r in menu_item_roles:
+                            count += 1
+                        elif r == 'group':
+                            count += count_items(get_relevant_children(c))
+                    return count
+                
+                set_size = count_items(relevant_children)
+                if set_size > 0:
+                    props.append(f"setSize={set_size}")
+
             # B. Extract labelledBy relation metadata
             labelled_by_str = ""
             name_obj = node.get('name', {})
@@ -148,7 +181,6 @@ def get_formatted_ax_tree():
                         labelled_by_str = f' labelledBy="{target_id}"'
 
             # C. Stitch it together
-            role_str = node.get('role', {}).get('value', 'unknown')
             name_val = name_obj.get('value')
             name_str = f' name="{name_val}"' if name_val else ''
             prop_str = f" {' '.join(props)}" if props else ""
@@ -156,8 +188,8 @@ def get_formatted_ax_tree():
             result = f"{indent}{role_str}{name_str}{labelled_by_str}{prop_str}\n"
 
             # D. Recurse into children
-            for child in get_relevant_children(node):
-                result += format_node(child, indent + '  ')
+            for child in relevant_children:
+                result += format_node(child, siblings=relevant_children, indent=indent + '  ')
             
             return result
 
@@ -165,8 +197,9 @@ def get_formatted_ax_tree():
         root = next((n for n in nodes if n.get('role', {}).get('value') == 'RootWebArea'), None)
         
         if root:
-            for top_node in get_relevant_children(root):
-                print(format_node(top_node, ""), end="")
+            relevant_children = get_relevant_children(root)
+            for top_node in relevant_children:
+                print(format_node(top_node, siblings=relevant_children, indent=""), end="")
         else:
             print("Could not find RootWebArea.")
 
