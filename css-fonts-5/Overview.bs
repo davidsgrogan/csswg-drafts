@@ -48,6 +48,13 @@ spec:css-cascade-5; type:dfn; text:used value
 	}
 </pre>
 
+<pre class=anchors>
+url: https://html.spec.whatwg.org/multipage/semantics.html#meta-text-scale;
+	type: attr-value; for: meta/name; spec: html; text: text-scale;
+url: https://html.spec.whatwg.org/multipage/semantics.html#text-scale-keyword;
+	type: dfn; spec: html; text: text-scale keyword;
+</pre>
+
 
 <h2 id="introduction">
 Introduction</h2>
@@ -89,29 +96,17 @@ Note: Applying a linear scale to all keywords would render large fonts excessive
 <a href="https://github.com/w3c/wcag3/issues/261#issuecomment-2598860630">
 WCAG discussion on minimum and maximum critical font sizes</a>.
 
-A document with a <{meta}> tag
-whose <{meta/name}> attribute
-is an <a>ASCII case-insensitive</a> match for
-<dfn lt="text-scale" export><code>"text-scale"</code></dfn>
-is recognized as controlling the [=text scale factor=].
-
-The value of the <{meta/content}>
-attribute must be an <a>ASCII case-insensitive</a> match for one of the
-recognized keywords. Otherwise the tag is ignored.
-
-Documents without this <{meta}> tag will have an assumed default
-value of <a for="text-scale">legacy</a>.
+The [=text scale factor=] is determined by the document's [=text-scale keyword=] [[HTML]],
+which is one of the recognized keywords defined below.
 
 <div class="example" id="ex-text-scale">
 	<pre class="lang-html">&lt;meta name="text-scale" content="scale" /></pre>
 </div>
 
-There must not be more than one <{meta}> element with its <{meta/name}> attribute value set to an [=ASCII case-insensitive=] match for [=text-scale=] per document.
-
 <h3 id="text-scale-meta-keywords">
 Keywords</h3>
 
-The recognized keywords in the [=text-scale=]
+The recognized keywords in the <{meta/name/text-scale}>
 <{meta}> element are:
 
 <dl>
@@ -122,7 +117,7 @@ The recognized keywords in the [=text-scale=]
 		[=text scale factor=] incorporates UA-level font preferences but
 		OS-level font preferences are ignored.
 
-		Note: Equivalent to omitting a [=text-scale=] <{meta}> tag or
+		Note: Equivalent to omitting a <{meta/name/text-scale}> <{meta}> tag or
 		including an unrecognized content attribute keyword.
 	</dd>
 	<dt><dfn for="text-scale">scale</dfn></dt>
@@ -134,7 +129,7 @@ The recognized keywords in the [=text-scale=]
 
 <h3 id="legacy-keyword">The <a for="text-scale">legacy</a> keyword</h3>
 
-When the value of the [=text-scale=] content attribute is
+When the document's [=text-scale keyword=] is
 [=text-scale/legacy=],
 the [=text scale factor=] is the font scale factor
 the user has chosen from any settings provided <i>only</i> by the user agent.
@@ -155,7 +150,7 @@ On mobile platforms:
 
 <h3 id="scale-keyword">The 'scale' keyword</h3>
 
-When the value of the [=text-scale=] content attribute is
+When the document's [=text-scale keyword=] is
 <a for="text-scale">scale</a>,
 the [=text scale factor=] matches the user's preferred paragraph text size
 (as determined from a combination of OS and UA preferences)
@@ -163,7 +158,7 @@ divided by 16px.
 
 The ''env()/preferred-text-scale'' environment variable must return the [=text scale factor=].
 
-Further, when the value of the [=text-scale=] content attribute is
+Further, when the document's [=text-scale keyword=] is
 <a for=text-scale>scale</a>, the user agent should skip all font-sizing interventions it would otherwise perform in an attempt to automatically honor the user's preferences. E.g. text autosizing on mobile (See [[css-size-adjust#intro]]) and full-application zoom (<a href="https://github.com/w3c/csswg-drafts/blob/main/css-env-1/explainers/env-preferred-text-scale.md#windows-11">popular browsers do this on Windows)</a>.
 
 Note:
